@@ -1,0 +1,14 @@
+galaxy_info:
+  author: Daniel Shaw <daniel@afrinic.net>
+  description: A fairly simple Cisco ISO ACL role
+  company: AFRINIC
+  # issue_tracker_url: http://example.com/issue/tracker
+  license: Apache 2.0
+  min_ansible_version: 2.2
+  platforms:
+    - name: Cisco ISO
+  galaxy_tags:
+    - Cisco
+    - ISO
+    - ACL
+dependencies: []

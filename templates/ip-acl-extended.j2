@@ -1,0 +1,37 @@
+{% for key, value in vars['access_lists_ipv4']|dictsort(false, 'key') %}
+{%  if value['type'] == 'extended' %}
+- acl:
+  name: {{value['name']}}
+  lines:
+{%    for rule in value['rules'] %}
+{%      if 'action' in rule and (rule['action'] == 'permit' or rule['action'] == 'deny') %}
+{%        set src = rule['src_net'] |default('any',true) %}
+{%        if src != 'any' %}
+{%          if rule['src_net'] |ipv4('prefix') == 32 %}
+{%            set src = 'host ' + rule['src_net'] |ipv4('ip') %}
+{%          else %}
+{%            set src = rule['src_net'] |ipv4('network') + ' ' + rule['src_net'] |ipv4('hostmask') %}
+{%          endif %}
+{%        endif %}
+{%        set dst = rule['dst_net'] |default('any',true) %}
+{%        if dst != 'any' %}
+{%          if rule['dst_net'] |ipv4('prefix') == 32 %}
+{%            set dst = 'host ' + rule['dst_net'] |ipv4('ip') %}
+{%          else %}
+{%            set dst = rule['dst_net'] |ipv4('network') + ' ' + rule['dst_net'] |ipv4('hostmask') %}
+{%          endif %}
+{%        endif %}
+{%        if rule['src_port'] is defined and rule['src_port'] is not none %}
+{%          set sport = 'eq ' + rule['src_port']|string + ' ' %}
+{%        endif %}
+{%        if rule['dst_port'] is defined and rule['dst_port'] is not none %}
+{%          set dport = 'eq ' + rule['dst_port']|string + ' ' %}
+{%        endif %}
+  - {{'%-6s'|format(rule['action'])}} {{'%-3s'|format(rule['proto']|default('ip',true))}} {{src}} {{sport|default('',true)}}{{dst}} {{dport|default('',true)}}
+{%      endif %}
+{%      if 'remark' in rule %}
+  - remark *** {{rule['remark']}} ***
+{%      endif %}
+{%    endfor %}
+{%  endif %}
+{% endfor %}
