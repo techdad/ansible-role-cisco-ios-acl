@@ -1,24 +1,16 @@
-Cisco ACL Role
+Ansible Role: Cisco IOS ACLs
 ==============
 
-A fairly simple role to apply ACLs to interfaces on a Cisco IOS device.
+An Ansible role to apply extended ACLs to interfaces on a Cisco IOS device.
 
-This role is designed to be applicable mainly to ACLs applies to Vlan SVI interfaces on a L3 switch. And it follows a fairly specific naming convention for the ACLs.
+This role is intended only to manage Cisco IOS extended access control lists, not an entire configuration.
 
-It is intended to eventually allow overrides of everything with appropriate variables, but in the mean time, should still be fairly adaptable in a fork if necessary.
-
-Requirements
-------------
-
-None.
+The primary use case it's initially developed for is to manage ACLs applicable to vlan SVI interfaces on L3 switches and/or physical router interfaces. It supports creating and updating the ACLs, but may not initially support applying them to the relevant interface(s).
 
 Role Variables
 --------------
 
 TBD
-
-Dependencies
-------------
 
 
 Example Playbook
@@ -26,9 +18,19 @@ Example Playbook
 
 TBD...
 
-    - hosts: servers
+    ---
+    - hosts: [ "ios-devices" ]
+      gather_facts: no
+      connection: local
+    
       roles:
-         - { role: username.rolename, x: 42 }
+        - { role: cisco-ios-acl, tags: ['cisco', 'acl'] }
+    
+      vars:
+        cisco_userid: "some_userid"
+        cisco_passwd: "the_users_password"
+        cisco_enable: "the_enable_secret"
+    
 
 License
 -------
@@ -38,5 +40,5 @@ Apache 2.0
 Author Information
 ------------------
 
-AFRINIC: Daniel Shaw <daniel@afrinic.net>
+Daniel Shaw <daniel@afrinic.net>
 
