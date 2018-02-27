@@ -1,5 +1,5 @@
 ---
-- name: Setup login and access "provider".
+- name: Setup login and access (provider).
   set_fact:
     provider:
       host: "{{inventory_hostname}}" 
@@ -7,13 +7,23 @@
       password: "{{cisco_passwd}}"
       auth_pass: "{{cisco_enable}}"
 
-- name: Construct ACLs from template.
+- name: Construct ip(v4) ACLs from template.
   set_fact:
-    acls_yaml: "{{ lookup('template', 'templates/ip-acl-extended.j2')|from_yaml }}"    
+    acls_v4_yaml: "{{ lookup('template', 'templates/ip-acl-extended.j2')|from_yaml }}"    
 
-- name: Include tasks for loading ACL(s) into device(s).
-  include_tasks: "load-ios-acl.yml"
-  with_items: "{{acls_yaml}}"
+- name: Include tasks for loading ip(v4) ACL(s) into device(s).
+  include_tasks: "load-ios-ip-acl.yml"
+  with_items: "{{acls_v4_yaml}}"
+  loop_control:
+    loop_var: acl
+
+- name: Construct ipv6) ACLs from template.
+  set_fact:
+    acls_v6_yaml: "{{ lookup('template', 'templates/ipv6-acl-extended.j2')|from_yaml }}"    
+
+- name: Include tasks for loading ipv6) ACL(s) into device(s).
+  include_tasks: "load-ios-ipv6-acl.yml"
+  with_items: "{{acls_v6_yaml}}"
   loop_control:
     loop_var: acl
 

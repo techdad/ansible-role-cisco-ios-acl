@@ -1,0 +1,34 @@
+
+- name: Check if the ipv6 ACL already exists.
+  ios_command:
+    provider: "{{ provider }}"
+    commands:
+      - "show access-list {{ acl['name'] }} | i {{ acl['name'] }}"
+  register: before_acl
+
+- name: Configure (create) the ipv6 ACLs on the devices.
+  ios_config:
+    provider: "{{ provider }}"
+    authorize: yes
+    parents: "ipv6 access-list {{ acl['name'] }}"
+    lines: "{{ acl['lines'] }}"
+    match: exact
+    replace: block
+    diff_against: running
+  register: config_run
+  when: before_acl.stdout[0] == ""
+
+- name: Configure (replace) the ipv6 ACLs on the devices.
+  ios_config:
+    provider: "{{ provider }}"
+    authorize: yes
+    before: "no ipv6 access-list {{ acl['name'] }}"
+    parents: "ipv6 access-list {{ acl['name'] }}"
+    lines: "{{ acl['lines'] }}"
+    match: exact
+    replace: block
+    diff_against: running
+  register: config_run
+  when: before_acl.stdout[0] != ""
+
+#- debug: var=config_run
