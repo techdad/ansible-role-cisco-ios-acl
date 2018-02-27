@@ -1,0 +1,14 @@
+
+- name: Configure the ip(v4) ACLs on the devices.
+  ios_config:
+    provider: "{{ provider }}"
+    authorize: yes
+    before: "no ip access-list extended {{ acl['name'] }}"
+    parents: "ip access-list extended {{ acl['name'] }}"
+    lines: "{{ acl['lines'] }}"
+    match: exact
+    replace: block
+    diff_against: running
+  register: config_run
+
+#- debug: var=config_run
